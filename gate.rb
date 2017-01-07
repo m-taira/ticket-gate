@@ -1,14 +1,14 @@
-class Gate
-  STATIONS = %i(umeda juso shonai okamachi)
-  FARE_TABLE = [
-    [false, 150, 180, 220],
-    [150, false, 150, 180],
-    [180, 150, false, 150],
-    [220, 180, 150, false]
-  ]
+require 'forwardable'
 
-  def initialize(station)
+class Gate
+  extend Forwardable
+
+  def_delegator :@fare_table, :valid_station?, :valid_station?
+
+  def initialize(station, fare_table)
     @station = station
+    @fare_table = fare_table
+    raise '存在しない駅名です。' unless valid_station? station
   end
 
   def entry(ticket)
@@ -17,24 +17,22 @@ class Gate
     ticket
   end
 
-  def come_out(ticket)
+  def go_out(ticket)
     raise '同じ駅では出場できません。' if same_station?(ticket)
     raise '入場していないチケットです。' unless ticket.entried?
-    raise '出場済みのチケットです。' if ticket.come_outed?
-    ticket.come_out(@station)
-    sufficed?(ticket)
+    raise '出場済みのチケットです。' if ticket.go_outed?
+    return false if short?(ticket)
+
+    ticket.go_out(@station)
+    true
   end
 
   private
-  def sufficed?(ticket)
-    ticket.amount >= fare(ticket.entry_station, ticket.come_out_station)
+
+  def short?(ticket)
+    ticket.amount < @fare_table.fare(ticket.entry_station, @station)
   end
 
-  def fare(in_station, out_station)
-    in_index = STATIONS.index(in_station)
-    out_index = STATIONS.index(out_station)
-    FARE_TABLE[in_index][out_index]
-  end
 
   def same_station?(ticket)
     ticket.entry_station == @station

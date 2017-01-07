@@ -11,7 +11,7 @@ class Ticket
     @entry_station = station
   end
 
-  def come_out(station)
+  def go_out(station)
     @come_out_station = station
   end
 
@@ -19,7 +19,7 @@ class Ticket
     !@entry_station.nil?
   end
 
-  def come_outed?
+  def go_outed?
     !@come_out_station.nil?
   end
 end

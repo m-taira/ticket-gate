@@ -1,8 +1,13 @@
 require 'minitest/autorun'
 require './ticket'
 require './gate'
+require './fare_table'
 
 class TestTicketGate < Minitest::Test
+
+  def setup
+    @fare_table = FareTable.new
+  end
 
   def test_scenario1
     # シナリオ1（1区間）
@@ -11,12 +16,12 @@ class TestTicketGate < Minitest::Test
     ticket = Ticket.new(150)
 
     # 梅田で入場し、十三で出場する。
-    in_station = Gate.new(:umeda)
-    out_station = Gate.new(:juso)
+    in_station = Gate.new(:umeda, @fare_table)
+    out_station = Gate.new(:juso, @fare_table)
     ticket = in_station.entry(ticket)
 
     # 期待する結果: 出場できる。
-    assert_equal true, out_station.come_out(ticket)
+    assert_equal true, out_station.go_out(ticket)
   end
 
   def test_scenario2
@@ -26,12 +31,12 @@ class TestTicketGate < Minitest::Test
     ticket = Ticket.new(150)
 
     # 梅田で入場し、庄内で出場する。
-    in_station = Gate.new(:umeda)
-    out_station = Gate.new(:shonai)
+    in_station = Gate.new(:umeda, @fare_table)
+    out_station = Gate.new(:shonai, @fare_table)
     ticket = in_station.entry(ticket)
 
     # 期待する結果: 出場できない。
-    assert_equal false, out_station.come_out(ticket)
+    assert_equal false, out_station.go_out(ticket)
   end
 
   def test_scenario3
@@ -41,12 +46,12 @@ class TestTicketGate < Minitest::Test
     ticket = Ticket.new(180)
 
     # 梅田で入場し、庄内で出場する。
-    in_station = Gate.new(:umeda)
-    out_station = Gate.new(:shonai)
+    in_station = Gate.new(:umeda, @fare_table)
+    out_station = Gate.new(:shonai, @fare_table)
     ticket = in_station.entry(ticket)
 
     # 期待する結果: 出場できる。
-    assert_equal true, out_station.come_out(ticket)
+    assert_equal true, out_station.go_out(ticket)
   end
 
   def test_scenario4
@@ -56,12 +61,12 @@ class TestTicketGate < Minitest::Test
     ticket = Ticket.new(220)
 
     # 梅田で入場し、庄内で出場する。
-    in_station = Gate.new(:umeda)
-    out_station = Gate.new(:shonai)
+    in_station = Gate.new(:umeda, @fare_table)
+    out_station = Gate.new(:shonai, @fare_table)
     ticket = in_station.entry(ticket)
 
     # 期待する結果: 出場できる。
-    assert_equal true, out_station.come_out(ticket)
+    assert_equal true, out_station.go_out(ticket)
   end
 
   def test_scenario5
@@ -71,12 +76,12 @@ class TestTicketGate < Minitest::Test
     ticket = Ticket.new(180)
 
     # 梅田で入場し、岡町で出場する。
-    in_station = Gate.new(:umeda)
-    out_station = Gate.new(:okamachi)
+    in_station = Gate.new(:umeda, @fare_table)
+    out_station = Gate.new(:okamachi, @fare_table)
     ticket = in_station.entry(ticket)
 
     # 期待する結果: 出場できない。
-    assert_equal false, out_station.come_out(ticket)
+    assert_equal false, out_station.go_out(ticket)
   end
 
   def test_scenario6
@@ -85,12 +90,12 @@ class TestTicketGate < Minitest::Test
     # 220円の切符を購入する。
     ticket = Ticket.new(220)
     # 梅田で入場し、岡町で出場する。
-    in_station = Gate.new(:umeda)
-    out_station = Gate.new(:okamachi)
+    in_station = Gate.new(:umeda, @fare_table)
+    out_station = Gate.new(:okamachi, @fare_table)
     ticket = in_station.entry(ticket)
 
     # 期待する結果: 出場できる。
-    assert_equal true, out_station.come_out(ticket)
+    assert_equal true, out_station.go_out(ticket)
   end
 
   def test_scenario7
@@ -100,12 +105,12 @@ class TestTicketGate < Minitest::Test
     ticket = Ticket.new(150)
 
     # 十三で入場し、岡町で出場する。
-    in_station = Gate.new(:juso)
-    out_station = Gate.new(:okamachi)
+    in_station = Gate.new(:juso, @fare_table)
+    out_station = Gate.new(:okamachi, @fare_table)
     ticket = in_station.entry(ticket)
 
     # 期待する結果: 出場できない。
-    assert_equal false, out_station.come_out(ticket)
+    assert_equal false, out_station.go_out(ticket)
   end
 
   def test_scenario8
@@ -115,12 +120,12 @@ class TestTicketGate < Minitest::Test
     ticket = Ticket.new(180)
 
     # 十三で入場し、岡町で出場する。
-    in_station = Gate.new(:juso)
-    out_station = Gate.new(:okamachi)
+    in_station = Gate.new(:juso, @fare_table)
+    out_station = Gate.new(:okamachi, @fare_table)
     ticket = in_station.entry(ticket)
 
     # 期待する結果: 出場できる。
-    assert_equal true, out_station.come_out(ticket)
+    assert_equal true, out_station.go_out(ticket)
   end
 
   def test_scenario9
@@ -131,12 +136,12 @@ class TestTicketGate < Minitest::Test
     ticket = Ticket.new(150)
 
     # 岡町で入場し、庄内で出場する。
-    in_station = Gate.new(:okamachi)
-    out_station = Gate.new(:shonai)
+    in_station = Gate.new(:okamachi, @fare_table)
+    out_station = Gate.new(:shonai, @fare_table)
     ticket = in_station.entry(ticket)
 
     # 期待する結果: 出場できる。
-    assert_equal true, out_station.come_out(ticket)
+    assert_equal true, out_station.go_out(ticket)
   end
 
   def test_scenario10
@@ -145,14 +150,14 @@ class TestTicketGate < Minitest::Test
     # 150円の切符を購入する。
     ticket = Ticket.new(150)
     # 梅田で入場し、梅田で出場する。
-    in_station = Gate.new(:umeda)
-    out_station = Gate.new(:umeda)
+    in_station = Gate.new(:umeda, @fare_table)
+    out_station = Gate.new(:umeda, @fare_table)
     ticket = in_station.entry(ticket)
 
 
     # 期待する結果: 出場できない。（出場できない理由がわかるようにすること）
     error = assert_raises do
-      out_station.come_out(ticket)
+      out_station.go_out(ticket)
     end
     assert_equal '同じ駅では出場できません。', error.message
   end
@@ -164,7 +169,7 @@ class TestTicketGate < Minitest::Test
     ticket = Ticket.new(150)
 
     # 梅田で入場する。
-    in_station = Gate.new(:umeda)
+    in_station = Gate.new(:umeda, @fare_table)
     ticket = in_station.entry(ticket)
 
     # さらに同じ切符で梅田から再入場する。
@@ -183,16 +188,16 @@ class TestTicketGate < Minitest::Test
     ticket = Ticket.new(150)
 
     # 梅田で入場し、十三で出場する。
-    in_station = Gate.new(:umeda)
-    out_station = Gate.new(:juso)
+    in_station = Gate.new(:umeda, @fare_table)
+    out_station = Gate.new(:juso, @fare_table)
 
     ticket = in_station.entry(ticket)
-    out_station.come_out(ticket)
+    out_station.go_out(ticket)
 
     # さらに同じ切符で十三で再出場する。
     # 期待する結果: 出場できない。（出場できない理由がわかるようにすること）
     error = assert_raises do
-      out_station.come_out(ticket)
+      out_station.go_out(ticket)
     end
 
     assert_equal '出場済みのチケットです。', error.message
@@ -205,17 +210,39 @@ class TestTicketGate < Minitest::Test
     ticekt = Ticket.new(150)
 
     # 入場時に改札機を通さないまま梅田で出場する。
-    out_station = Gate.new(:umeda)
+    out_station = Gate.new(:umeda, @fare_table)
 
     # 期待する結果: 出場できない。（出場できない理由がわかるようにすること）
     error = assert_raises do
-      out_station.come_out(ticekt)
+      out_station.go_out(ticekt)
     end
 
     assert_equal '入場していないチケットです。', error.message
   end
 
-  # シナリオ14（自分で新しい仕様を考える）
 
-  # 実際の改札機を想像しながら、プログラムに新しい機能を追加する。
+  def test_scenario14
+    # シナリオ14（自分で新しい仕様を考える）
+    # 実際の改札機を想像しながら、プログラムに新しい機能を追加する。
+
+    # 存在しない駅を作る
+    error = assert_raises do
+      Gate.new(:osaka, @fare_table)
+    end
+    assert_equal '存在しない駅名です。', error.message
+  end
+
+  def test_scenario14_2
+    # 乗り過ごしたあと、正しい駅で出場できる
+    ticket = Ticket.new(150)
+
+    in_staiton = Gate.new(:umeda, @fare_table)
+    out_station_over = Gate.new(:okamachi, @fare_table)
+    out_station = Gate.new(:juso, @fare_table)
+
+    ticket = in_staiton.entry(ticket)
+    out_station_over.go_out(ticket)
+
+    assert_equal true, out_station.go_out(ticket)
+  end
 end
