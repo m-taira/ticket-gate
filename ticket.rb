@@ -1,18 +1,18 @@
 class Ticket
-  attr_reader :amount, :entry_station, :come_out_station
+  attr_reader :amount, :entry_station, :go_out_station
 
   def initialize(amount)
     @amount = amount
     @entry_station = nil
-    @come_out_station = nil
+    @go_out_station = nil
   end
 
-  def entry(station)
+  def write_entry(station)
     @entry_station = station
   end
 
-  def go_out(station)
-    @come_out_station = station
+  def write_go_out(station)
+    @go_out_station = station
   end
 
   def entried?
@@ -20,6 +20,6 @@ class Ticket
   end
 
   def go_outed?
-    !@come_out_station.nil?
+    !@go_out_station.nil?
   end
 end

@@ -13,7 +13,7 @@ class Gate
 
   def entry(ticket)
     raise '入場済みのチケットです。' if ticket.entried?
-    ticket.entry(@station)
+    ticket.write_entry(@station)
     ticket
   end
 
@@ -23,7 +23,7 @@ class Gate
     raise '出場済みのチケットです。' if ticket.go_outed?
     return false if short?(ticket)
 
-    ticket.go_out(@station)
+    ticket.write_go_out(@station)
     true
   end
 
